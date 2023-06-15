@@ -1,0 +1,24 @@
+stages:
+  - build
+  - test
+  - deploy
+build:
+  image: node:16
+  stage: build
+  before_script:
+    - yarn
+  script:
+    - yarn build
+  only:
+    - main
+  artifacts:
+    paths:
+      - build/
+netlify:
+  stage: deploy
+  image: node:16
+  script:
+    - npm install -g netlify-cli
+    # - npx netlify deploy -d "build" --prod --site $NETLIFY_SITE_ID --auth $NETLIFY_AUTH_TOKEN
+    # - netlify deploy --dir=build --prod
+    - netlify deploy --dir=build --site="101313f9-ab99-4716-84cb-1b03b62bcfb0" --auth="AlngtXfE575dCXDrowhjXRAyT9cqv8JICVyydNWBUrQ" --prod
