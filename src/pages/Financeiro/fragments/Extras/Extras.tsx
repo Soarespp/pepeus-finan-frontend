@@ -11,6 +11,7 @@ import {
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 import { useFinanContext } from "../../../../contexts/financeiro/FinanContexts";
+import NotSearch from "../../../../components/NotSearch";
 
 const Extras = () => {
   const { extras, addExtra, updateExtra } = useFinanContext();
@@ -41,6 +42,7 @@ const Extras = () => {
           Add
         </Button>
       </Grid>
+      {extras.length === 0 && <NotSearch type="extra" />}
       {extras?.map(
         (
           extra: {
