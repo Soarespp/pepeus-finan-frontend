@@ -46,11 +46,19 @@ const Header = () => {
           >
             <MenuItem
               onClick={() => {
-                navigate("/");
+                navigate("/Home");
                 handleClose();
               }}
             >
               Home
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                navigate("/");
+                handleClose();
+              }}
+            >
+              Logout
             </MenuItem>
           </Menu>
         </Grid>

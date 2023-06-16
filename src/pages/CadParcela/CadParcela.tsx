@@ -94,7 +94,6 @@ const CadParcela = () => {
       pessoas: data.pessoas,
     };
 
-    console.log({ dadosInsert });
     !!state?.idParcela
       ? updateParcelado({ ...dadosInsert, id: state?.idParcela })
       : addParcelado({
