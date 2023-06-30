@@ -7,19 +7,19 @@ import {
   Button,
   TextField,
   Grid,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import Select from "@mui/material/Select";
 
-import { format } from "date-fns";
+import { addMonths, format } from "date-fns";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-import {
-  LacamentosType,
-  useFinanContext,
-} from "../../../../contexts/financeiro/FinanContexts";
+import { useFinanContext } from "../../../../contexts/financeiro/FinanContexts";
+import { LacamentosType } from "../../../../hooks/useLancamentos/useLancamentos";
 
 const lancamentoSchema = z.object({
   descricao: z.string().nonempty({
@@ -29,6 +29,8 @@ const lancamentoSchema = z.object({
   vezes: z.coerce.number().optional(),
   dtCompra: z.coerce.date().optional(),
   type: z.enum(["despesa", "receita"]),
+  lancamentoCard: z.coerce.boolean().optional(),
+  resumo: z.coerce.boolean().optional(),
 });
 
 type LancamentoData = z.infer<typeof lancamentoSchema>;
@@ -45,30 +47,30 @@ const CadastroLancamentos = ({ onClose }: { onClose: () => void }) => {
   });
 
   const onSubmit = (data: LancamentoData) => {
-    let dadosInsert: LacamentosType = {
+    let dadosInsert: Partial<LacamentosType> = {
       ...data,
-      id: `L-${format(new Date(), "yyyyMMddhhmmssT")}`,
     };
 
-    !!data?.vezes ? (dadosInsert.dtFim = new Date()) : delete dadosInsert.vezes;
+    !!data?.vezes
+      ? (dadosInsert.dtFim = addMonths(data.dtCompra || new Date(), data.vezes))
+      : delete dadosInsert.vezes;
 
     addLancamento(dadosInsert);
     onClose();
   };
 
   return (
-    <Grid container item xs={12} textAlign="center" justifyContent="center">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid
-          container
-          item
-          sm={8}
-          gap={3}
-          xs={12}
-          justifyContent="center"
-          textAlign="center"
-        >
-          <Grid item sm={4}>
+    <form onSubmit={handleSubmit(onSubmit)} style={{ margin: "auto" }}>
+      <Grid
+        container
+        xs={12}
+        sx={{
+          padding: "12px",
+          justifyContent: "center",
+        }}
+      >
+        <Grid container item xs={12} sm={6} sx={{ padding: "12px" }} gap={2}>
+          <Grid item sm={6} xs={12}>
             <InputLabel id="input-dtcompra">Tipo Lançamento</InputLabel>
             <Select
               label="Tipo lacamento"
@@ -81,7 +83,7 @@ const CadastroLancamentos = ({ onClose }: { onClose: () => void }) => {
               <MenuItem value="despesa">Despesa</MenuItem>
             </Select>
           </Grid>
-          <Grid item sm={4}>
+          <Grid item sm={5} xs={12}>
             <InputLabel id="input-dtcompra">Dt. Compra</InputLabel>
             <TextField
               id="input-dtcompra"
@@ -92,7 +94,7 @@ const CadastroLancamentos = ({ onClose }: { onClose: () => void }) => {
               {...register("dtCompra")}
             />
           </Grid>
-          <Grid item sm={10}>
+          <Grid item sm={11} xs={12}>
             <Input
               placeholder="Descrição"
               fullWidth
@@ -100,7 +102,7 @@ const CadastroLancamentos = ({ onClose }: { onClose: () => void }) => {
               error={!!errors?.descricao}
             />
           </Grid>
-          <Grid item sm={5}>
+          <Grid item sm={6} xs={12}>
             <InputLabel id="input-valor">Valor</InputLabel>
             <Input
               id="input-valor"
@@ -110,7 +112,7 @@ const CadastroLancamentos = ({ onClose }: { onClose: () => void }) => {
               error={!!errors?.valor}
             />
           </Grid>
-          <Grid item sm={5}>
+          <Grid item sm={5} xs={12}>
             <InputLabel id="input-vezes">Vezes</InputLabel>
             <Input
               placeholder="Vezes"
@@ -121,11 +123,26 @@ const CadastroLancamentos = ({ onClose }: { onClose: () => void }) => {
               error={!!errors?.vezes}
             />
           </Grid>
-
+          <Grid item xs={12} sm={5.8}>
+            <FormControlLabel
+              {...register("lancamentoCard")}
+              control={<Switch color="primary" />}
+              label="Lançameto em cartão"
+              labelPlacement="start"
+            />
+          </Grid>
+          <Grid item xs={12} sm={5.8}>
+            <FormControlLabel
+              {...register("resumo")}
+              control={<Switch color="primary" />}
+              label="Apenas para Prospecção"
+              labelPlacement="start"
+            />
+          </Grid>
           <Grid
             container
             item
-            xs={8}
+            xs={12}
             sm={10}
             justifyContent="flex-end"
             textAlign="end"
@@ -139,8 +156,8 @@ const CadastroLancamentos = ({ onClose }: { onClose: () => void }) => {
             </Button>
           </Grid>
         </Grid>
-      </form>
-    </Grid>
+      </Grid>
+    </form>
   );
 };
 

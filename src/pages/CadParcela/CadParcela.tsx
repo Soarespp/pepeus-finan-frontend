@@ -21,6 +21,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 import { useFinanContext } from "../../contexts/financeiro/FinanContexts";
+import { Parcela } from "../../hooks/useParcelados/useParcelados";
 
 const finanSchema = z.object({
   descricao: z.string().nonempty({
@@ -56,7 +57,7 @@ const CadParcela = () => {
     name: "pessoas",
   });
 
-  const { addParcelado, parcelados, updateParcelado } = useFinanContext();
+  const { addParcelado, parcelados, updateParcelado, user } = useFinanContext();
   const { state } = useLocation();
 
   const addDivisao = () => {
@@ -66,14 +67,17 @@ const CadParcela = () => {
   useMemo(() => {
     if (!!state?.idParcela) {
       const dataUpdate = parcelados?.find(
-        (itens) => itens.id === state.idParcela
+        (itens) => itens._id === state.idParcela
       );
 
       reset({
         descricao: dataUpdate?.descricao,
         valor: dataUpdate?.valor,
         vezes: dataUpdate?.vezes,
-        dtCompra: format(dataUpdate?.dtCompra as Date, "yyyy-MM-dd"),
+        dtCompra: format(
+          dataUpdate?.dtCompra || (new Date() as Date),
+          "yyyy-MM-dd"
+        ),
         observacao: dataUpdate?.observacao,
         pessoas: dataUpdate?.pessoas,
       });
@@ -92,13 +96,16 @@ const CadParcela = () => {
       dtCompra: new Date(data.dtCompra),
       observacao: data.observacao,
       pessoas: data.pessoas,
-    };
+      user: user.id,
+    } as Parcela;
 
     !!state?.idParcela
-      ? updateParcelado({ ...dadosInsert, id: state?.idParcela })
+      ? updateParcelado({
+          ...dadosInsert,
+          _id: state?.idParcela,
+        })
       : addParcelado({
           ...dadosInsert,
-          id: `P-${format(new Date(), "yyyyMMddhhmmssT")}`,
         });
     navigate("/parcelados");
   };
@@ -185,14 +192,14 @@ const CadParcela = () => {
           <Grid container item xs={12}>
             {fields.map((field, index) => (
               <Grid container item xs={12} key={field.id}>
-                <Grid item xs={11} key={field.id}>
+                <Grid item xs={11}>
                   <TextField
                     label="Nome"
                     fullWidth
                     {...register(`pessoas.${index}.name`)}
                   />
                 </Grid>
-                <Grid item xs={1} key={field.id}>
+                <Grid item xs={1}>
                   <IconButton onClick={() => remove(index)}>
                     <DeleteOutlineIcon />
                   </IconButton>

@@ -1,4 +1,4 @@
-import { LacamentosData } from "../contexts/financeiro/FinanContexts";
+import { LacamentosData } from "../hooks/useLancamentos/useLancamentos";
 import { ValidaPeriodo } from "./utilsGeral";
 
 export const getLancamentosMes = (
@@ -17,14 +17,45 @@ export const getLancamentosMes = (
 
 export const sumLancamentosMes = (
   lancamentos: LacamentosData | undefined,
-  dtValida: Date
+  dtValida: Date,
+  descCard?: boolean,
+  descResumo?: boolean,
+  type?: string
 ): number => {
   const sum: number =
-    lancamentos?.reduce((sum, currente) => {
-      return ValidaPeriodo(currente.dtFim, dtValida, currente?.dtCompra)
-        ? sum - currente.valor
-        : sum;
-    }, 0) || 0;
+    lancamentos
+      ?.filter((item) => (descCard ? !item.lancamentoCard : true))
+      ?.filter((item) => (descResumo ? !item.resumo : true))
+      ?.filter((item) => (type ? item.type === type : true))
+      ?.filter((item) => ValidaPeriodo(item.dtFim, dtValida, item?.dtCompra))
+      .reduce((sum, currente) => {
+        const value =
+          (currente.type === "despesa" ? -1 * currente.valor : currente.valor) /
+          (currente.vezes || 1);
+        return sum + value;
+      }, 0) || 0;
 
-  return sum;
+  return Math.round(sum);
+};
+
+export const fomartaLancamentos = (lancamentos: LacamentosData) => {
+  const lancamentoFormatado = lancamentos?.map((item) => {
+    if (!item.dtCompra) {
+      return { ...item };
+    }
+
+    if (!item.dtFim) {
+      return {
+        ...item,
+        dtCompra: new Date(item.dtCompra),
+      };
+    }
+
+    return {
+      ...item,
+      dtFim: new Date(item.dtFim),
+      dtCompra: new Date(item.dtCompra),
+    };
+  });
+  return lancamentoFormatado;
 };

@@ -9,9 +9,12 @@ import {
 } from "@mui/material";
 import { Menu as MenuIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { useFinanContext } from "../../contexts/financeiro/FinanContexts";
+import { setLogout } from "../../utils/userLogin";
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const { user } = useFinanContext();
   const navigate = useNavigate();
 
   const handleClose = () => {
@@ -54,8 +57,19 @@ const Header = () => {
             </MenuItem>
             <MenuItem
               onClick={() => {
-                navigate("/");
+                navigate("/cad-usuario", {
+                  state: { user_id: user.id },
+                });
                 handleClose();
+              }}
+            >
+              Perfil
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                setLogout();
+                handleClose();
+                navigate("/");
               }}
             >
               Logout

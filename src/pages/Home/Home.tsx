@@ -10,46 +10,54 @@ const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <Grid
-      container
-      spacing={3}
-      gap={4}
-      justifyContent="center"
-      alignItems="center"
-      textAlign="center"
-      height="100%"
+    <div
+      style={{
+        display: "flex",
+        minHeight: "calc(100vh - 120px)",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
     >
-      <Grid item md>
-        <S.ButtonMaterial
-          variant="text"
-          onClick={() => navigate("/financeiro")}
-        >
-          <S.ContainerButton>
-            <LocalAtm fontSize="large" />
-            <Typography>Financeiro</Typography>
-          </S.ContainerButton>
-        </S.ButtonMaterial>
+      <Grid
+        container
+        spacing={3}
+        gap={4}
+        justifyContent="center"
+        alignItems="center"
+        textAlign="center"
+      >
+        <Grid item md>
+          <S.ButtonMaterial
+            variant="text"
+            onClick={() => navigate("/financeiro")}
+          >
+            <S.ContainerButton>
+              <LocalAtm fontSize="large" />
+              <Typography>Financeiro</Typography>
+            </S.ContainerButton>
+          </S.ButtonMaterial>
+        </Grid>
+        <Grid item md>
+          <S.ButtonMaterial
+            variant="text"
+            onClick={() => navigate("/parcelados")}
+          >
+            <S.ContainerButton>
+              <CreditCard fontSize="large" />
+              <Typography>Parcelados</Typography>
+            </S.ContainerButton>
+          </S.ButtonMaterial>
+        </Grid>
+        <Grid item md>
+          <S.ButtonMaterial variant="text" onClick={() => navigate("/resumo")}>
+            <S.ContainerButton>
+              <AssessmentOutlined fontSize="large" />
+              <Typography>Resumo</Typography>
+            </S.ContainerButton>
+          </S.ButtonMaterial>
+        </Grid>
       </Grid>
-      <Grid item md>
-        <S.ButtonMaterial
-          variant="text"
-          onClick={() => navigate("/parcelados")}
-        >
-          <S.ContainerButton>
-            <CreditCard fontSize="large" />
-            <Typography>Parcelados</Typography>
-          </S.ContainerButton>
-        </S.ButtonMaterial>
-      </Grid>
-      <Grid item md>
-        <S.ButtonMaterial variant="text" onClick={() => navigate("/resumo")}>
-          <S.ContainerButton>
-            <AssessmentOutlined fontSize="large" />
-            <Typography>Resumo</Typography>
-          </S.ContainerButton>
-        </S.ButtonMaterial>
-      </Grid>
-    </Grid>
+    </div>
   );
 };
 

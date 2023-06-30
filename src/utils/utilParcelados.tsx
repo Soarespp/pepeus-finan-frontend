@@ -1,14 +1,10 @@
-import { format } from "date-fns";
-import { ParcelaData } from "../contexts/financeiro/FinanContexts";
 import { ValidaPeriodo } from "./utilsGeral";
+import { ParcelaData } from "../hooks/useParcelados/useParcelados";
 
 export const sumParceladosMes = (
   parcelados: ParcelaData | undefined,
   dtValida: Date
 ): number => {
-  if (dtValida && format(dtValida, "yyyy/mm") === "2023/01") {
-    console.log(format(dtValida, "yyyy/mm"));
-  }
   const sum: number =
     parcelados?.reduce((sum, currente) => {
       return ValidaPeriodo(currente.dtFim, dtValida, currente.dtCompra)
@@ -19,4 +15,37 @@ export const sumParceladosMes = (
         : sum;
     }, 0) || 0;
   return sum;
+};
+
+const returnDividos = (pessoas: { name: string; _id: string }[] | undefined) =>
+  pessoas?.map((item) => item.name);
+
+export const formataParcelados = (parcelados: ParcelaData) => {
+  const parceladosFormatado = parcelados?.map((parcela) => {
+    if (!parcela?.dtFim && !parcela?.dtFim) {
+      return {
+        ...parcela,
+        divididos: returnDividos(
+          parcela.pessoas as { name: string; _id: string }[] | undefined
+        ),
+      };
+    }
+
+    if (!!parcela?.dtFim) {
+      parcela.dtFim = new Date(parcela.dtFim);
+    }
+
+    if (!!parcela?.dtCompra) {
+      parcela.dtCompra = new Date(parcela.dtCompra);
+    }
+
+    return {
+      ...parcela,
+      divididos: returnDividos(
+        parcela.pessoas as { name: string; _id: string }[] | undefined
+      ),
+    };
+  });
+
+  return parceladosFormatado;
 };

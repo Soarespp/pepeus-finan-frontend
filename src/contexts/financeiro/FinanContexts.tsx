@@ -1,103 +1,233 @@
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import useParcelados from "../../hooks/useParcelados";
+import { Parcela, ParcelaData } from "../../hooks/useParcelados/useParcelados";
+import useCarteira, { Carteira } from "../../hooks/useCarteira/useCarteira";
+import useLancamentos, {
+  LacamentosData,
+  LacamentosType,
+} from "../../hooks/useLancamentos/useLancamentos";
+import useExtras, {
+  ExtraData,
+  ExtraType,
+} from "../../hooks/useExtras/useExtras";
 
 type FinanProviderProps = {
   children: React.ReactNode;
 };
 
-export type Parcela = {
-  id: string;
-  valor: number;
-  descricao: string;
-  cartao: string;
-  vezes: number;
-  dtFim: Date;
-  dtCompra: Date;
-  observacao?: string;
-  pessoas?: { name: string }[];
-};
-
-export type ParcelaData = Parcela[];
-
-export type LacamentosType = {
-  id: string;
-  descricao: string;
-  type: "despesa" | "receita";
-  valor: number;
-  dtCompra?: Date;
-  vezes?: number;
-  dtFim?: Date;
-  default?: boolean;
-};
-
-export type LacamentosData = LacamentosType[];
 export const FinanContext = createContext({} as FinanContextData);
 
-export type ExtraData = {
-  valor: number;
-  descricao: string;
-  dtFim?: Date;
-};
+interface intUser {
+  id: string;
+  name: string;
+}
 
 type FinanContextData = {
-  salario: number;
-  parcelados: ParcelaData;
+  user: intUser;
+  carteira: Carteira | undefined;
+  parcelados: ParcelaData | undefined;
   lancamentos: LacamentosData;
-  extras: ExtraData[];
-  setSalario: (param: number) => void | undefined;
-  setParcelados: (param: ParcelaData) => void;
-  addParcelado: (newItem: Parcela) => void;
+  extras: ExtraType;
+  addParcelado: (newItem: Partial<Parcela>) => void;
   delParcelado: (idItem: string) => void;
   updateParcelado: (newItem: Parcela) => void;
-  addLancamento: (newItem: LacamentosType) => void;
+  addLancamento: (newItem: Partial<LacamentosType>) => void;
   delLancamento: (idDel: string) => void;
   addExtra: (param: ExtraData) => void;
-  updateExtra: (item: ExtraData[]) => void;
+  updateExtra: (item: ExtraType) => void;
+  setUser: (newUser: intUser) => void;
+  getDadosParcelados: (user: string) => void;
+  applayCarteira: (carteira: Partial<Carteira>) => void;
+  applyExtraItem: (extra: ExtraData) => void;
+  deleteExtra: (extraId: number) => void;
+  AtualizarDadosFinan: () => void;
+  AtualizarDadosGeral: () => void;
 };
 
 export const FinanProvider = ({ children }: FinanProviderProps) => {
-  const [parcelados, setParcelados] = useState<ParcelaData>([]);
-  const [lancamentos, setLancamentos] = useState<LacamentosData>([]);
-  const [salario, setSalario] = useState<number>(7000);
-  const [extras, setExtras] = useState<ExtraData[]>([]);
+  const {
+    getDadosParcelados,
+    data: parcelados,
+    insertParcela,
+    delParcela,
+  } = useParcelados();
 
-  const addParcelado = (newItem: Parcela) => {
-    setParcelados((oldVal) => [...oldVal, newItem]);
+  const { data: carteira, getDadosCarteira, updateCarteira } = useCarteira();
+
+  const {
+    data: dataLancamentos,
+    getDadosLancamentos,
+    delCarteira,
+    insertLancamento,
+  } = useLancamentos();
+
+  const {
+    data: dataExtra,
+    updateLancamento,
+    getDadosExtra,
+    delExtra,
+  } = useExtras();
+
+  const [user, setUser] = useState<intUser>({ id: "", name: "" });
+  const [lancamentos, setLancamentos] = useState<LacamentosData>([]);
+  const [extras, setExtras] = useState<ExtraType>([]);
+
+  const getUser = (idUser?: string) => {
+    if (idUser && idUser !== "") {
+      return idUser;
+    }
+
+    if (!!user.id && user.id !== "") {
+      return user.id;
+    }
+
+    return localStorage.getItem("user-id") || "undefined";
+  };
+
+  /* eslint-disable */
+  useEffect(() => {
+    const idUser = localStorage.getItem("user-id");
+    const nameUser = localStorage.getItem("user-name");
+
+    if (idUser && nameUser && user.id === "") {
+      setUser({ id: idUser, name: nameUser });
+    }
+  }, []);
+  /* eslint-enable */
+
+  const addParcelado = (newItem: Partial<Parcela>) => {
+    insertParcela(newItem as Parcela).then(() => {
+      alert("Cadastro realizado com sucesso");
+      getDadosParcelados(user?.id);
+    });
   };
 
   const delParcelado = (idItem: string) => {
-    setParcelados((oldVal) => oldVal.filter((parc) => parc.id !== idItem));
+    delParcela(idItem).then(() => {
+      alert("deletado parcela com sucesso");
+      getDadosParcelados(user?.id);
+    });
   };
 
-  const updateParcelado = (newItem: Parcela) => {
-    setParcelados((oldVal) => [
-      ...oldVal.filter((oldParcel) => oldParcel.id !== newItem.id),
-      newItem,
-    ]);
+  const updateParcelado = (itemUpdate: Parcela) => {
+    insertParcela(itemUpdate as Parcela).then(() => {
+      alert("Cadastro atualziado com sucesso");
+      getDadosParcelados(user?.id);
+    });
   };
 
-  const addLancamento = (newItem: LacamentosType) => {
-    setLancamentos((oldVal) => [...oldVal, newItem]);
+  const addLancamento = (newItem: Partial<LacamentosType>) => {
+    if (!newItem) {
+      return;
+    }
+    const paramUser = getUser(user.id);
+
+    insertLancamento({ ...newItem, user: paramUser }).then((response) => {
+      if (response.data.sucess) {
+        getDadosLancamentos(paramUser);
+      }
+    });
   };
 
   const delLancamento = (idDel: string) => {
-    setLancamentos((oldVal) => oldVal.filter((item) => item.id !== idDel));
+    delCarteira(idDel).then((response) => {
+      if (response.data.sucess) {
+        getDadosLancamentos(user.id);
+      }
+    });
   };
 
   const addExtra = (item: ExtraData) => {
-    setExtras((old) => [...old, item]);
+    !!item && setExtras((old) => [...old, item]);
   };
 
   const updateExtra = (data: ExtraData[]) => {
     setExtras(data);
   };
 
+  const applyExtraItem = (data: ExtraData) => {
+    updateLancamento(data).then((response) => {
+      if (response.data.sucess) {
+        setExtras((old) => [
+          ...old.filter(
+            (item) => !!item._id && item._id !== response.data.extra._id
+          ),
+          { ...response.data.extra, isState: "unknown" },
+        ]);
+      }
+    });
+  };
+
+  const deleteExtra = (extraId: number) => {
+    const itemDelete = extras.find((item, key) => key === extraId);
+    try {
+      if (!!itemDelete?._id) {
+        delExtra(itemDelete._id).then((response) => {
+          if (response.data.sucess) {
+            console.log("deletado", response.data);
+          }
+        });
+      }
+      setExtras((old) => [...old.filter((item, key) => key !== extraId)]);
+    } catch {
+      alert("ouve um problema.");
+    }
+  };
+
+  const applayCarteira = useCallback((data: Partial<Carteira>) => {
+    if (!data) {
+      return;
+    }
+    console.log("applyCarteira", { data });
+    const paramUser = getUser(data.user);
+
+    updateCarteira({ ...data, user: paramUser }).then((response) => {
+      if (response?.data.sucess) {
+        getDadosCarteira(paramUser);
+      }
+    });
+  }, []);
+
+  const AtualizarDadosFinan = () => {
+    const paramUser = getUser();
+    getDadosCarteira(paramUser);
+    getDadosLancamentos(paramUser);
+    getDadosExtra(paramUser);
+  };
+
+  const AtualizarDadosGeral = () => {
+    const paramUser = getUser();
+    getDadosCarteira(paramUser);
+    getDadosLancamentos(paramUser);
+    getDadosExtra(paramUser);
+    getDadosParcelados(paramUser);
+  };
+
+  useMemo(() => {
+    if (dataLancamentos) {
+      setLancamentos(dataLancamentos);
+    }
+  }, [dataLancamentos]);
+
+  useMemo(() => {
+    if (dataExtra) {
+      setExtras(dataExtra);
+    }
+  }, [dataExtra]);
+
   const finan = {
-    salario,
+    user,
+    carteira,
     parcelados,
     lancamentos,
     extras,
-    setSalario,
-    setParcelados,
     addParcelado,
     delParcelado,
     updateParcelado,
@@ -105,6 +235,13 @@ export const FinanProvider = ({ children }: FinanProviderProps) => {
     delLancamento,
     addExtra,
     updateExtra,
+    setUser,
+    getDadosParcelados,
+    applayCarteira,
+    applyExtraItem,
+    deleteExtra,
+    AtualizarDadosFinan,
+    AtualizarDadosGeral,
   };
   return (
     <FinanContext.Provider value={finan}>{children}</FinanContext.Provider>

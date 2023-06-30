@@ -15,36 +15,28 @@ import CadUser from "./pages/CadUser/";
 function App() {
   const renderHeader = (item: React.ReactElement) => <Geral>{item}</Geral>;
   return (
-    <div style={{ height: "100vh" }}>
-      <BrowserRouter>
-        <FinanProvider>
-          <div
-            style={{
-              height: "calc(100% - 120px)",
-              overflow: "auto",
-              padding: "0 20px",
-            }}
-            data-testid="container-routes"
-          >
-            <Routes>
-              <Route path="/" element={<Login />} />
-              <Route path="/home" element={renderHeader(<Home />)} />
-              <Route path="/parcelados" element={renderHeader(<Parcelas />)} />
-              <Route
-                path="/cad-parcela"
-                element={renderHeader(<CadParcela />)}
-              />
-              <Route
-                path="/financeiro"
-                element={renderHeader(<Financeiro />)}
-              />
-              <Route path="/resumo" element={renderHeader(<Resumo />)} />
-              <Route path="/cad-usuario" element={<CadUser />} />
-            </Routes>
-          </div>
-        </FinanProvider>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <FinanProvider>
+        {/* <div
+          style={{
+            // height: "calc(100% - 120px)",
+            overflow: "auto",
+            // padding: "0 20px",
+          }}
+          data-testid="container-routes"
+        > */}
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/home" element={renderHeader(<Home />)} />
+          <Route path="/parcelados" element={renderHeader(<Parcelas />)} />
+          <Route path="/cad-parcela" element={renderHeader(<CadParcela />)} />
+          <Route path="/financeiro" element={renderHeader(<Financeiro />)} />
+          <Route path="/resumo" element={renderHeader(<Resumo />)} />
+          <Route path="/cad-usuario" element={<CadUser />} />
+        </Routes>
+        {/* </div> */}
+      </FinanProvider>
+    </BrowserRouter>
   );
 }
 

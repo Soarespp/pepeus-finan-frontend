@@ -1,16 +1,16 @@
 import { endOfMonth, isAfter, isBefore, isEqual } from "date-fns";
 
 export const ValidaPeriodo = (
-  dtItem: Date | undefined,
+  dtFim: Date | undefined,
   dtValida: Date,
   dtCompra?: Date
 ): boolean => {
   return (
-    (!dtItem ||
-      isAfter(endOfMonth(dtItem), endOfMonth(dtValida)) ||
-      isEqual(endOfMonth(dtItem), endOfMonth(dtValida))) &&
+    (!dtFim ||
+      isAfter(endOfMonth(dtFim), endOfMonth(dtValida)) ||
+      isEqual(endOfMonth(dtFim), endOfMonth(dtValida))) &&
     (!dtCompra ||
-      (!!dtCompra && !dtItem) ||
-      isBefore(endOfMonth(dtCompra), endOfMonth(dtValida)))
+      isBefore(endOfMonth(dtCompra), endOfMonth(dtValida)) ||
+      isEqual(endOfMonth(dtCompra), endOfMonth(dtValida)))
   );
 };

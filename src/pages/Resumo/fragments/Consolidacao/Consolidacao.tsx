@@ -10,10 +10,12 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
-import { useFinanContext } from "../../../../contexts/financeiro/FinanContexts";
 import { endOfMonth, isAfter, isEqual } from "date-fns";
+
 import ImportItens from "../ImportItens";
+
 import { sumParceladosMes } from "../../../../utils/utilParcelados";
+import { useFinanContext } from "../../../../contexts/financeiro/FinanContexts";
 
 type ShcemaData = {
   descricao: string;
@@ -26,8 +28,8 @@ const returnItemConsul = (
   changeValue: (descricao: string, key: number, value: number | string) => void
 ) => {
   return (
-    <>
-      <Grid item xs={5}>
+    <Grid container item key={key} gap={2}>
+      <Grid item xs={5} sm={5.8}>
         <InputLabel htmlFor="valor-inpt">Valor</InputLabel>
         <Input
           fullWidth
@@ -39,7 +41,7 @@ const returnItemConsul = (
           }}
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={5} sm={5.8}>
         <InputLabel htmlFor="descricao-inpt">Descrição</InputLabel>
         <Input
           fullWidth
@@ -50,12 +52,12 @@ const returnItemConsul = (
           }}
         />
       </Grid>
-    </>
+    </Grid>
   );
 };
 
 const Consolidacao = () => {
-  const { salario, lancamentos, extras, parcelados } = useFinanContext();
+  const { carteira, lancamentos, extras, parcelados } = useFinanContext();
   const [data, setData] = useState<ShcemaData>([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [openImports, setOpenImports] = useState(false);
@@ -111,7 +113,7 @@ const Consolidacao = () => {
 
   const sumValor = () => {
     const valor =
-      salario +
+      (carteira?.salario || 0) +
       data?.reduce((sum, curr) => {
         return sum + curr.valor;
       }, 0);
@@ -123,12 +125,22 @@ const Consolidacao = () => {
   };
 
   return (
-    <Grid container padding="12px">
-      <Grid container item xs={12} textAlign="center">
-        <Grid item xs={8}>
+    <Grid
+      container
+      item
+      xs={12}
+      sm={5.9}
+      sx={{
+        margin: "12px 0px 0px 0px",
+        boxShadow: " 0px 3px 3px 3px gray",
+        padding: "0px 10px",
+      }}
+    >
+      <Grid container item xs={12}>
+        <Grid item sm={8} xs={6} textAlign="center">
           <Typography> Consolidacao</Typography>
         </Grid>
-        <Grid item xs={2}>
+        <Grid item sm={2} xs={3}>
           <Button
             onClick={() =>
               setData((old) => [...old, { descricao: "", valor: 0 }])
@@ -140,72 +152,74 @@ const Consolidacao = () => {
         <Grid item xs={2}>
           <Button onClick={handleClick}>Opções</Button>
         </Grid>
-        <Grid container gap={2} item xs={12}>
-          <Grid item xs={5}>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="valSalario-inpt">Valor</InputLabel>
-              <Input
-                value={salario?.toLocaleString("pt-br", {
-                  style: "currency",
-                  currency: "BRL",
-                })}
-                readOnly
-                fullWidth
-                name="valSalario-inpt"
-              />
-            </FormControl>
-          </Grid>
+      </Grid>
+      <Grid container gap={2} item xs={12}>
+        <Grid item xs={5} sm={5.8}>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="valSalario-inpt">Valor</InputLabel>
+            <Input
+              value={carteira?.salario?.toLocaleString("pt-br", {
+                style: "currency",
+                currency: "BRL",
+              })}
+              readOnly
+              fullWidth
+              name="valSalario-inpt"
+            />
+          </FormControl>
+        </Grid>
 
-          <Grid item xs={6}>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="salario-inpt">Valor</InputLabel>
-              <Input value="Salario" readOnly fullWidth name="salario-inpt" />
-            </FormControl>
-          </Grid>
+        <Grid item xs={5} sm={5.8}>
+          <FormControl fullWidth>
+            <InputLabel htmlFor="salario-inpt">Valor</InputLabel>
+            <Input value="Salario" readOnly fullWidth name="salario-inpt" />
+          </FormControl>
+        </Grid>
 
-          {data?.map((item, key) => returnItemConsul(item, key, changeValue))}
-          <Grid item xs={5}>
-            <Typography variant="h5">{sumValor()}</Typography>
-          </Grid>
-          <Grid item xs={6}>
-            <Typography variant="h5"> Total</Typography>
-          </Grid>
+        {data?.map((item, key) => returnItemConsul(item, key, changeValue))}
+        <Grid item xs={5}>
+          <Typography variant="h5">{sumValor()}</Typography>
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="h5"> Total</Typography>
         </Grid>
       </Grid>
-      <Menu
-        id="basic-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          "aria-labelledby": "basic-button",
-        }}
-      >
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            importAllLacamentos();
+      <Grid item xs={2}>
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            "aria-labelledby": "basic-button",
           }}
         >
-          Importa todos
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            setOpenImports(true);
-            handleClose();
-          }}
-        >
-          Selecionar Importados
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            setData([]);
-            handleClose();
-          }}
-        >
-          Limpar
-        </MenuItem>
-      </Menu>
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              importAllLacamentos();
+            }}
+          >
+            Importa todos
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setOpenImports(true);
+              handleClose();
+            }}
+          >
+            Selecionar Importados
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setData([]);
+              handleClose();
+            }}
+          >
+            Limpar
+          </MenuItem>
+        </Menu>
+      </Grid>
       <ImportItens
         open={openImports}
         setOpen={setOpenImports}

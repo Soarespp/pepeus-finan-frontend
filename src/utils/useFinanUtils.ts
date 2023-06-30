@@ -1,9 +1,8 @@
 import { getYear } from "date-fns";
 import {
-  ExtraData,
   LacamentosData,
   LacamentosType,
-} from "../contexts/financeiro/FinanContexts";
+} from "../hooks/useLancamentos/useLancamentos";
 
 export const getTotaisYear = ({
   lancamentos,
@@ -38,13 +37,28 @@ export const getTotaisYear = ({
   return (resultValue || 0) + salario;
 };
 
-export const getExtraSum = (dados: ExtraData[]): number => {
-  const resultSum = dados?.reduce(
-    (previus: number, currente: Partial<ExtraData> | undefined) => {
-      return previus + (currente?.valor || 0);
+export const getTotalMonth = ({
+  valores,
+  salario,
+}: {
+  valores: { descricao: string; valor: number }[] | undefined;
+  salario: number;
+}): number => {
+  const resultValue = valores?.reduce(
+    (
+      previus: number,
+      creature: {
+        descricao: string;
+        valor: number;
+      }
+    ): number => {
+      if (!!creature?.valor) {
+        return previus + creature?.valor;
+      }
+
+      return previus;
     },
     0
   );
-
-  return resultSum;
+  return (resultValue || 0) + salario;
 };

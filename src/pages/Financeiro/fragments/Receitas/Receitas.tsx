@@ -14,7 +14,7 @@ const Receitas = () => {
             container
             item
             xs={12}
-            key={lancamento?.id}
+            key={lancamento?._id}
             boxShadow="0px 3px 3px 3px #888888"
           >
             <Grid item xs={12} sm={5}>
@@ -33,7 +33,7 @@ const Receitas = () => {
             </Grid>
             {!lancamento?.default && (
               <Grid item xs={3} sm={1}>
-                <IconButton onClick={() => delLancamento(lancamento.id)}>
+                <IconButton onClick={() => delLancamento(lancamento._id)}>
                   <DeleteOutlineIcon />
                 </IconButton>
               </Grid>

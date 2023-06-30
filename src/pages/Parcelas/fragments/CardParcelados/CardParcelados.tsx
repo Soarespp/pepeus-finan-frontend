@@ -4,12 +4,10 @@ import { IconButton, Menu, MenuItem, Grid, Tooltip } from "@mui/material";
 import { MoreVertOutlined } from "@mui/icons-material";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import {
-  Parcela,
-  useFinanContext,
-} from "../../../../contexts/financeiro/FinanContexts";
+import { useFinanContext } from "../../../../contexts/financeiro/FinanContexts";
 import { useNavigate } from "react-router-dom";
 import { TextTitle } from "./CardParcelados.styles";
+import { Parcela } from "../../../../hooks/useParcelados/useParcelados";
 
 type typeCardParcelados = {
   parcela: Parcela;
@@ -77,14 +75,19 @@ const CardParcelados = ({ parcela }: typeCardParcelados) => {
             onClose={handleClose}
             anchorEl={anchorEl}
           >
-            <MenuItem
+            {/* <MenuItem
               onClick={() => {
-                navigate("/cad-parcela", { state: { idParcela: parcela.id } });
+                navigate("/cad-parcela", { state: { idParcela: parcela._id } });
               }}
             >
               Editar
-            </MenuItem>
-            <MenuItem onClick={() => delParcelado(parcela.id)}>
+            </MenuItem> */}
+            <MenuItem
+              onClick={() => {
+                delParcelado(parcela._id);
+                handleClose();
+              }}
+            >
               Excluir
             </MenuItem>
           </Menu>

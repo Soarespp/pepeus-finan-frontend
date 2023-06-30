@@ -1,9 +1,11 @@
 export const setLogout = () => {
-  sessionStorage.removeItem("user-logado");
-  sessionStorage.removeItem("user-name");
+  localStorage.removeItem("user-logado");
+  localStorage.removeItem("user-name");
+  localStorage.removeItem("user-id");
 };
 
-export const setLogin = ({ user, name }) => {
-  sessionStorage.setItem("user-logado", user);
-  sessionStorage.setItem("user-name", name);
+export const setLogin = ({ user, name, id }) => {
+  localStorage.setItem("user-logado", user);
+  localStorage.setItem("user-name", name);
+  localStorage.setItem("user-id", id);
 };

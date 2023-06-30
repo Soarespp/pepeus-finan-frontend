@@ -3,7 +3,7 @@ import { styled } from "@mui/system";
 
 export const Container = styled("div")({
   backgroundColor: "#b3fdb384",
-  margin: "100px auto",
+  margin: "10px",
   maxWidth: "500px",
   boxShadow: "0px 6px 6px 6px gray",
   borderRadius: "6px",

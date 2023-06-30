@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import {
   Box,
-  Input,
   Typography,
   Button,
   Grid,
@@ -18,8 +17,19 @@ import { useFinanContext } from "../../contexts/financeiro/FinanContexts";
 import CadastroLancamentos from "./fragments/CadastroLancamentos";
 import LacamentosFinan from "./fragments/LacamentosFinanceiros/LacamentosFinanceiros";
 
+import Carteira from "./fragments/Carteira/Carteira";
+import { isAfter } from "date-fns";
+import Variaveis from "./fragments/Variaveis";
+
 const Financeiro = () => {
-  const { salario, setSalario } = useFinanContext();
+  const {
+    carteira,
+    AtualizarDadosFinan,
+    applayCarteira,
+    user,
+    lancamentos,
+    delLancamento,
+  } = useFinanContext();
   const [openCadastro, setOpenCadastro] = useState<boolean>(false);
 
   const [expanded, setExpanded] = useState<string | false>(false);
@@ -29,41 +39,84 @@ const Financeiro = () => {
       setExpanded(isExpanded ? panel : false);
     };
 
-  const renderSalario = () => (
-    <Input
-      value={salario}
-      type="number"
-      onChange={(event) => {
-        setSalario(Number(event.target.value));
-      }}
-      defaultValue={salario}
-    />
-  );
+  /* eslint-disable */
+  useMemo(() => {
+    AtualizarDadosFinan();
+  }, [user]);
+  /* eslint-enable */
+
+  const somaLancamento = (type: string, total: boolean = false) =>
+    lancamentos
+      ?.filter((item) => item.type === type)
+      .filter((item) => (!!item.dtFim ? isAfter(item.dtFim, new Date()) : true))
+      .reduce(
+        (sum, value) =>
+          sum + value.valor / (total && !!value.vezes ? value.vezes : 1),
+        0
+      );
 
   const listFinan = [
     {
       name: "salario",
-      title: "Salario",
+      title: "Carteira",
       subTitle: "",
-      content: renderSalario(),
+      content: (
+        <Carteira carteiraData={carteira} applayCarteira={applayCarteira} />
+      ),
     },
     {
       name: "receitas",
       title: "Receitas",
-      subTitle: "",
-      content: <LacamentosFinan type="receita" />,
+      subTitle: `Total ${somaLancamento("receita").toLocaleString("pt-br", {
+        style: "currency",
+        currency: "BRL",
+      })} com parcial de ${somaLancamento("receita", true).toLocaleString(
+        "pt-br",
+        {
+          style: "currency",
+          currency: "BRL",
+        }
+      )}`,
+      content: (
+        <LacamentosFinan
+          type="receita"
+          lancamentos={lancamentos}
+          delLancamento={delLancamento}
+        />
+      ),
     },
     {
       name: "despesas",
       title: "Despesas",
-      subTitle: "",
-      content: <LacamentosFinan type="despesa" />,
+      subTitle: `Total ${somaLancamento("despesa").toLocaleString("pt-br", {
+        style: "currency",
+        currency: "BRL",
+      })} com parcial de ${somaLancamento("despesa", true).toLocaleString(
+        "pt-br",
+        {
+          style: "currency",
+          currency: "BRL",
+        }
+      )}`,
+      content: (
+        <LacamentosFinan
+          type="despesa"
+          lancamentos={lancamentos}
+          delLancamento={delLancamento}
+        />
+      ),
     },
     {
       name: "extras",
       title: "Extras",
       subTitle: "",
       content: <Extras />,
+    },
+    {
+      name: "variaveis",
+      title: "Variaveis",
+      subTitle: "",
+      content: <Variaveis />,
     },
   ];
 
@@ -87,25 +140,32 @@ const Financeiro = () => {
         )}
         {!openCadastro && (
           <Grid item xs={12} textAlign="end">
-            <Button onClick={() => setOpenCadastro((old) => !old)} color="info">
+            <Button
+              onClick={() => {
+                setOpenCadastro((old) => !old);
+                setExpanded(false);
+              }}
+              color="info"
+            >
               Cadastrar
             </Button>
           </Grid>
         )}
         {listFinan.map((item) => (
-          <Grid item xs={12}>
+          <Grid item xs={12} key={item.name}>
             <Accordion
               expanded={expanded === item.name}
               onChange={handleChange(item.name)}
-              sx={{ backgroundColor: "#b3fdb384" }}
             >
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 id={`expand-${item.name}`}
               >
-                <Typography sx={{ width: "33%", flexShrink: 0 }}>
-                  {item.title}
-                </Typography>
+                {item.title && (
+                  <Typography sx={{ width: "33%", flexShrink: 0 }}>
+                    {item.title}
+                  </Typography>
+                )}
                 {item.subTitle && (
                   <Typography sx={{ color: "text.secondary" }}>
                     {item.subTitle}

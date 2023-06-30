@@ -37,7 +37,7 @@ const ImportItens = ({
     { info: "Extra", id: "2", checked: true },
     ...lancamentos.map((lanc) => ({
       info: lanc.descricao,
-      id: lanc.id,
+      id: lanc._id,
       checked: true,
     })),
   ]);
