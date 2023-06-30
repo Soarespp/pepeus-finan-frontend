@@ -17,6 +17,10 @@ import useExtras, {
   ExtraData,
   ExtraType,
 } from "../../hooks/useExtras/useExtras";
+import useCategoria, {
+  categoriaType,
+  categoriasData,
+} from "../../hooks/useCategoria/useCategoria";
 
 type FinanProviderProps = {
   children: React.ReactNode;
@@ -35,6 +39,7 @@ type FinanContextData = {
   parcelados: ParcelaData | undefined;
   lancamentos: LacamentosData;
   extras: ExtraType;
+  categoria: categoriasData | undefined;
   addParcelado: (newItem: Partial<Parcela>) => void;
   delParcelado: (idItem: string) => void;
   updateParcelado: (newItem: Parcela) => void;
@@ -49,6 +54,8 @@ type FinanContextData = {
   deleteExtra: (extraId: number) => void;
   AtualizarDadosFinan: () => void;
   AtualizarDadosGeral: () => void;
+  getDadosCategoria: (user: string) => void;
+  AplicarCategorias: (itens: categoriasData) => void;
 };
 
 export const FinanProvider = ({ children }: FinanProviderProps) => {
@@ -74,6 +81,12 @@ export const FinanProvider = ({ children }: FinanProviderProps) => {
     getDadosExtra,
     delExtra,
   } = useExtras();
+
+  const {
+    data: categoria,
+    getDadosCategoria,
+    aplicarCategoria,
+  } = useCategoria();
 
   const [user, setUser] = useState<intUser>({ id: "", name: "" });
   const [lancamentos, setLancamentos] = useState<LacamentosData>([]);
@@ -210,6 +223,10 @@ export const FinanProvider = ({ children }: FinanProviderProps) => {
     getDadosParcelados(paramUser);
   };
 
+  const AplicarCategorias = (itens: categoriasData) => {
+    aplicarCategoria(itens, getUser());
+  };
+
   useMemo(() => {
     if (dataLancamentos) {
       setLancamentos(dataLancamentos);
@@ -228,6 +245,7 @@ export const FinanProvider = ({ children }: FinanProviderProps) => {
     parcelados,
     lancamentos,
     extras,
+    categoria,
     addParcelado,
     delParcelado,
     updateParcelado,
@@ -242,6 +260,8 @@ export const FinanProvider = ({ children }: FinanProviderProps) => {
     deleteExtra,
     AtualizarDadosFinan,
     AtualizarDadosGeral,
+    getDadosCategoria,
+    AplicarCategorias,
   };
   return (
     <FinanContext.Provider value={finan}>{children}</FinanContext.Provider>

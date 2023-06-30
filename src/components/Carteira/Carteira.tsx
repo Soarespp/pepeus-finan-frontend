@@ -1,5 +1,5 @@
 import React, { memo, useMemo, useState } from "react";
-import { Carteira as PropCarteira } from "../../../../hooks/useCarteira/useCarteira";
+import { Carteira as PropCarteira } from "../../hooks/useCarteira/useCarteira";
 import {
   Input,
   Typography,

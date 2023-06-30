@@ -1,5 +1,5 @@
 import React from "react";
-import { useFinanContext } from "../../../../contexts/financeiro/FinanContexts";
+import { useFinanContext } from "../../contexts/financeiro/FinanContexts";
 import { Grid, IconButton } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 

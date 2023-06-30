@@ -11,9 +11,9 @@ import {
 
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
-import { useFinanContext } from "../../../../contexts/financeiro/FinanContexts";
-import NotSearch from "../../../../components/NotSearch";
-import { typeVariaveis } from "../../../../hooks/useCarteira/useCarteira";
+import { useFinanContext } from "../../contexts/financeiro/FinanContexts";
+import NotSearch from "../NotSearch";
+import { typeVariaveis } from "../../hooks/useCarteira/useCarteira";
 
 const Variaveis = () => {
   const { carteira, applayCarteira } = useFinanContext();

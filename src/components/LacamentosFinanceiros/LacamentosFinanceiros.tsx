@@ -1,11 +1,10 @@
 import React, { memo } from "react";
-import { useFinanContext } from "../../../../contexts/financeiro/FinanContexts";
 
 import { Grid, IconButton, Chip, Typography } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import NotSearch from "../../../../components/NotSearch";
-import { isAfter, isBefore } from "date-fns";
-import { LacamentosData } from "../../../../hooks/useLancamentos/useLancamentos";
+import NotSearch from "../NotSearch";
+import { isAfter } from "date-fns";
+import { LacamentosData } from "../../hooks/useLancamentos/useLancamentos";
 
 interface typoLancamentos {
   type: "receita" | "despesa";

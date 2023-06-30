@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import ApiAxios from "../../service/ApiAxios";
 import { fomartaLancamentos } from "../../utils/utilsLancamentos";
-
 export interface LacamentosType {
   _id: string;
   descricao: string;
@@ -14,6 +13,7 @@ export interface LacamentosType {
   default?: boolean;
   lancamentoCard?: boolean;
   resumo?: boolean;
+  categoria?: string;
 }
 
 export type LacamentosData = LacamentosType[];

@@ -10,26 +10,29 @@ import {
   AccordionSummary,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { isAfter } from "date-fns";
 
-import Extras from "./fragments/Extras";
+import Extras from "../../components/Extras";
 
 import { useFinanContext } from "../../contexts/financeiro/FinanContexts";
-import CadastroLancamentos from "./fragments/CadastroLancamentos";
-import LacamentosFinan from "./fragments/LacamentosFinanceiros/LacamentosFinanceiros";
+import CadastroLancamentos from "../../components/LacamentosFinanceiros/fragments/CadastroLancamentos";
+import LacamentosFinan from "../../components/LacamentosFinanceiros/LacamentosFinanceiros";
 
-import Carteira from "./fragments/Carteira/Carteira";
-import { isAfter } from "date-fns";
-import Variaveis from "./fragments/Variaveis";
+import Carteira from "../../components/Carteira/Carteira";
+import Variaveis from "../../components/Variaveis";
+import Categorias from "../../components/Categorias";
 
 const Financeiro = () => {
   const {
     carteira,
+    categoria,
     AtualizarDadosFinan,
     applayCarteira,
     user,
     lancamentos,
     delLancamento,
   } = useFinanContext();
+
   const [openCadastro, setOpenCadastro] = useState<boolean>(false);
 
   const [expanded, setExpanded] = useState<string | false>(false);
@@ -118,6 +121,12 @@ const Financeiro = () => {
       subTitle: "",
       content: <Variaveis />,
     },
+    {
+      name: "categorias",
+      title: "Categorias financeiras",
+      subTitle: "",
+      content: <Categorias />,
+    },
   ];
 
   return (
@@ -136,6 +145,7 @@ const Financeiro = () => {
               setOpenCadastro(false);
               setExpanded(false);
             }}
+            categorias={categoria}
           />
         )}
         {!openCadastro && (

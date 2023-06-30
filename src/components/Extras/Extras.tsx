@@ -13,9 +13,9 @@ import {
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
-import { useFinanContext } from "../../../../contexts/financeiro/FinanContexts";
-import NotSearch from "../../../../components/NotSearch";
-import { ExtraData } from "../../../../hooks/useExtras/useExtras";
+import { useFinanContext } from "../../contexts/financeiro/FinanContexts";
+import NotSearch from "../NotSearch";
+import { ExtraData } from "../../hooks/useExtras/useExtras";
 
 const Extras = () => {
   const { extras, addExtra, updateExtra, user, applyExtraItem, deleteExtra } =

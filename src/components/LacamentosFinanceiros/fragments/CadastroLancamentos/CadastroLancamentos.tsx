@@ -9,8 +9,8 @@ import {
   Grid,
   Switch,
   FormControlLabel,
+  Select,
 } from "@mui/material";
-import Select from "@mui/material/Select";
 
 import { addMonths, format } from "date-fns";
 
@@ -20,6 +20,8 @@ import { z } from "zod";
 
 import { useFinanContext } from "../../../../contexts/financeiro/FinanContexts";
 import { LacamentosType } from "../../../../hooks/useLancamentos/useLancamentos";
+
+import { categoriasData } from "../../../../hooks/useCategoria/useCategoria";
 
 const lancamentoSchema = z.object({
   descricao: z.string().nonempty({
@@ -31,11 +33,18 @@ const lancamentoSchema = z.object({
   type: z.enum(["despesa", "receita"]),
   lancamentoCard: z.coerce.boolean().optional(),
   resumo: z.coerce.boolean().optional(),
+  categoria: z.any().optional(),
 });
 
 type LancamentoData = z.infer<typeof lancamentoSchema>;
 
-const CadastroLancamentos = ({ onClose }: { onClose: () => void }) => {
+const CadastroLancamentos = ({
+  onClose,
+  categorias,
+}: {
+  onClose: () => void;
+  categorias: categoriasData | undefined;
+}) => {
   const { addLancamento } = useFinanContext();
 
   const {
@@ -122,6 +131,20 @@ const CadastroLancamentos = ({ onClose }: { onClose: () => void }) => {
               {...register("vezes")}
               error={!!errors?.vezes}
             />
+          </Grid>
+          <Grid item sm={6} xs={12}>
+            <InputLabel id="select-categoria">Tipo Lançamento</InputLabel>
+            <Select
+              label="Categorias"
+              fullWidth
+              id="select-categoria"
+              {...register("categoria")}
+              error={!!errors?.type}
+            >
+              {categorias?.map((categoria) => (
+                <MenuItem value={categoria._id}>{categoria.descricao}</MenuItem>
+              ))}
+            </Select>
           </Grid>
           <Grid item xs={12} sm={5.8}>
             <FormControlLabel
