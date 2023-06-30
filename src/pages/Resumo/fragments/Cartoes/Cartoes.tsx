@@ -36,7 +36,12 @@ const Cartoes = memo(({ parcelados, year }: CartoesProps) => {
                 getYear(item.dtCompra || new Date()) <= getYear(year))
           )
           .map((row, idx) => (
-            <Month row={row} year={getYear(year)} subItem={true} key={idx} />
+            <Month
+              row={row}
+              year={getYear(year)}
+              subItem={"#d6d4d4"}
+              key={idx}
+            />
           ))}
     </>
   );

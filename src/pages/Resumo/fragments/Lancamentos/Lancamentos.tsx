@@ -41,7 +41,12 @@ const Lancamentos = memo(({ lancamentos, year, type }: LancamentosProps) => {
               item?.type === type
           )
           .map((row, idx) => (
-            <Month row={row} year={getYear(year)} subItem={true} key={idx} />
+            <Month
+              row={row}
+              year={getYear(year)}
+              subItem={row.categoria?.color || "#d6d4d4"}
+              key={idx}
+            />
           ))}
     </>
   );

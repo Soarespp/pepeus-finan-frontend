@@ -5,6 +5,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import NotSearch from "../NotSearch";
 import { isAfter } from "date-fns";
 import { LacamentosData } from "../../hooks/useLancamentos/useLancamentos";
+import { categoriaType } from "../../hooks/useCategoria/useCategoria";
 
 interface typoLancamentos {
   type: "receita" | "despesa";
@@ -43,6 +44,9 @@ const LacamentosFinan = memo(
               boxShadow="0px 3px 3px 3px #888888"
               justifyContent="center"
               alignItems="center"
+              sx={{
+                backgroundColor: lancamento?.categoria?.color || "#fff",
+              }}
             >
               <Grid item xs={12} sm={5.5}>
                 <Typography paddingLeft="6px">

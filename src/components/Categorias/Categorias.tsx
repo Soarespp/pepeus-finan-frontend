@@ -47,7 +47,6 @@ const Categorias = () => {
   const onDelete = (key: number) => {
     const valor = categorias?.find((categoria, idx) => idx === key);
 
-    console.log({ valor });
     if (!valor || valor?.type === "NEW") {
       return setCategorias(
         (old) => old?.filter((categoria, idx) => idx !== key) || []

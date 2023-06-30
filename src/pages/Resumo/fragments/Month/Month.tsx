@@ -23,7 +23,7 @@ const Month = ({
   lancamentos,
   total,
   eventClick,
-  subItem = false,
+  subItem,
 }: {
   row: Partial<LacamentosType>;
   year: number;
@@ -37,7 +37,7 @@ const Month = ({
     itens: totaType;
   }[];
   eventClick?: () => void;
-  subItem?: boolean;
+  subItem?: string;
 }) => {
   const Months = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
   const salario = Number(row.valor) / (row.vezes || 1);
@@ -82,20 +82,6 @@ const Month = ({
           </TableCell>
         ))}
       </TableRow>
-
-      // <TableRow key={row._id}>
-      //   <TableCell align="right">{row.descricao}</TableCell>
-      //   {Months?.map((month) => (
-      //     <TableCell key={month} align="right">
-      //       {returnValueShow(
-      //         sumParceladosMes(itens, new Date(`${year}/${month + 1}/01`))
-      //       ).toLocaleString("pt-br", {
-      //         style: "currency",
-      //         currency: "BRL",
-      //       })}
-      //     </TableCell>
-      //   ))}
-      // </TableRow>
     );
   }
 
@@ -175,10 +161,7 @@ const Month = ({
   }
 
   return (
-    <TableRow
-      key={row._id}
-      sx={{ backgroundColor: subItem ? "#eaeaea" : "#fff" }}
-    >
+    <TableRow key={row._id} sx={{ backgroundColor: subItem || "#fff" }}>
       <TableCell align="right">{row.descricao}</TableCell>
       {Months?.map((month) => (
         <TableCell key={month} align="right">

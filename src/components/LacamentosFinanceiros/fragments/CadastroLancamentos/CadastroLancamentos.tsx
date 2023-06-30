@@ -58,6 +58,7 @@ const CadastroLancamentos = ({
   const onSubmit = (data: LancamentoData) => {
     let dadosInsert: Partial<LacamentosType> = {
       ...data,
+      categoria: { _id: data.categoria },
     };
 
     !!data?.vezes

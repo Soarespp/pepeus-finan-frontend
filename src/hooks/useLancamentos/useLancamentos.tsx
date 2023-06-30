@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import ApiAxios from "../../service/ApiAxios";
 import { fomartaLancamentos } from "../../utils/utilsLancamentos";
+import { categoriaType } from "../useCategoria/useCategoria";
 export interface LacamentosType {
   _id: string;
   descricao: string;
@@ -13,7 +14,7 @@ export interface LacamentosType {
   default?: boolean;
   lancamentoCard?: boolean;
   resumo?: boolean;
-  categoria?: string;
+  categoria?: Partial<categoriaType>;
 }
 
 export type LacamentosData = LacamentosType[];
@@ -22,7 +23,7 @@ const useLancamentos = () => {
   const [data, setData] = useState<LacamentosData>();
   const getDadosLancamentos = useCallback(
     (user: String) =>
-      ApiAxios.get(`/lancamentos/${user}`).then((response) => {
+      ApiAxios.get(`/lancamentos?user=${user}`).then((response) => {
         setData(fomartaLancamentos(response.data.lancamentos));
       }),
     []
